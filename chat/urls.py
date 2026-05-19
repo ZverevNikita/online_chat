@@ -8,5 +8,4 @@ urlpatterns = [
     path('<str:room_name>/', views.room, name='room'),
     path('<str:room_name>/upload/', views.upload_file, name='upload_file'),
     path('<str:room_name>/leave/', views.leave_room, name='leave_room'),
-    path('profile/<str:username>/', views.profile, name='profile'),
 ]
