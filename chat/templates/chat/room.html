@@ -1,23 +1,265 @@
-{% extends 'chat/main_base.html'%}
-{% block title %}{{ room_name }}{% endblock %}
-{% block content %}
-<div class="container mt-5">
-    <div class="ws-status" id="ws-status">Подключение...</div>
-    <h2>Комната: {{ room_name }}</h2>
-    <div class="alert alert-info">Вы вошли как: {{ username }}</div>
-    <div id="chat-log"></div>
+{% extends 'chat/main_base.html' %}
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="input-group mb-2">
-                <input type="text" id="chat-message-input" class="form-control" placeholder="Ваше сообщение...">
-                <button id="chat-message-submit" class="btn btn-primary">Отправить</button>
+{% block title %}{{ room_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f5f7fb;
+    }
+
+    /* Стили для комнаты чата */
+    .chat-container {
+        background: white;
+        border-radius: 28px;
+        box-shadow: 0 20px 35px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px 28px;
+        color: white;
+    }
+
+    .chat-header h2 {
+        margin: 0;
+        font-size: 1.7rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .chat-header h2:before {
+        content: "💬";
+        font-size: 1.5rem;
+    }
+
+    .chat-header .alert-info {
+        background: rgba(255,255,255,0.2);
+        border-radius: 40px;
+        padding: 6px 16px;
+        display: inline-block;
+        margin-top: 12px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        backdrop-filter: blur(4px);
+    }
+
+    /* Статус WebSocket */
+    .ws-status {
+        position: absolute;
+        top: 20px;
+        right: 28px;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
+        padding: 5px 14px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .ws-status.connected {
+        background: #28a745;
+    }
+    .ws-status.disconnected {
+        background: #dc3545;
+    }
+
+    /* Окно сообщений */
+    .chat-log {
+        height: 480px;
+        overflow-y: auto;
+        padding: 24px 28px;
+        background: #fafcff;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* Сообщения */
+    .message {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        max-width: 80%;
+    }
+
+    .message-mine {
+        align-items: flex-end;
+        align-self: flex-end;
+    }
+
+    .message-bubble {
+        background: white;
+        border-radius: 20px;
+        padding: 8px 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e9ecef;
+        max-width: 100%;
+    }
+
+    .message-mine .message-bubble {
+        background: linear-gradient(135deg, #e0e7ff 0%, #f3e8ff 100%);
+        border: none;
+        color: #1e1e2f;
+    }
+
+    .message-username {
+        font-weight: 700;
+        color: #667eea;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .message-time {
+        font-size: 0.65rem;
+        color: #8b9eb0;
+        margin-left: 8px;
+        font-weight: normal;
+    }
+
+    .message-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    /* Файловые сообщения */
+    .file-message {
+        background: #f1f5f9;
+        border-radius: 14px;
+        padding: 8px 12px;
+        margin-top: 6px;
+    }
+    .file-image-preview {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 12px;
+        margin-top: 8px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+    }
+
+    /* Формы ввода */
+    .input-area {
+        padding: 20px 28px;
+        background: white;
+        border-top: 1px solid #edf2f7;
+    }
+
+    .input-group-custom {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .input-group-custom .form-control {
+        flex: 1;
+        padding: 12px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 40px;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .input-group-custom .form-control:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+    }
+
+    .btn-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 0 24px;
+        border-radius: 40px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .btn-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+    }
+
+    .btn-secondary-custom {
+        background: #4a5568;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #2d3748;
+    }
+
+    .file-row {
+        margin-top: 12px;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 640px) {
+        .chat-header h2 {
+            font-size: 1.3rem;
+        }
+        .ws-status {
+            position: static;
+            display: inline-block;
+            margin-left: 12px;
+        }
+        .chat-log {
+            height: 400px;
+            padding: 16px;
+        }
+        .message {
+            max-width: 95%;
+        }
+        .input-group-custom {
+            flex-direction: column;
+        }
+        .btn-custom {
+            padding: 10px 20px;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="chat-container">
+        <div class="chat-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h2>Комната: {{ room_name }}</h2>
+                <div class="ws-status" id="ws-status">Подключение...</div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="input-group">
+
+        <div id="chat-log" class="chat-log"></div>
+
+        <div class="input-area">
+            <div class="input-group-custom">
+                <input type="text" id="chat-message-input" class="form-control" placeholder="Ваше сообщение...">
+                <button id="chat-message-submit" class="btn-custom">Отправить</button>
+            </div>
+            <div class="input-group-custom file-row">
                 <input type="file" id="file-input" class="form-control">
-                <button id="file-submit" class="btn btn-secondary">Отправить файл</button>
+                <button id="file-submit" class="btn-custom btn-secondary-custom">Отправить файл</button>
             </div>
         </div>
     </div>
@@ -104,21 +346,39 @@
         function appendMessage(msg) {
             const logDiv = document.getElementById('chat-log');
             if (!logDiv) return;
-            let timeStr = msg.timestamp ? `<small class="text-muted">${new Date(msg.timestamp).toLocaleTimeString()}</small> ` : '';
-            let html = `<div>${timeStr}`;
-            if (msg.type === 'text') {
-                html += `<strong>${escapeHtml(msg.username)}:</strong> ${escapeHtml(msg.content)}</div>`;
-            } else if (msg.type === 'file') {
-                html += `<strong>${escapeHtml(msg.username)}</strong> отправил файл: `;
-                if (msg.file_url && msg.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-                    html += `<div class="file-message"><a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a><br>
-                              <img src="${escapeHtml(msg.file_url)}" class="file-image-preview"></div>`;
-                } else {
-                    html += `<div class="file-message"><a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a> (${formatFileSize(msg.file_size)})</div>`;
-                }
-                html += `</div>`;
+            const isMine = (msg.username === username);
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isMine ? 'message-mine' : ''}`;
+
+            let timeStr = msg.timestamp ? `<span class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>` : '';
+
+            let bubbleHtml = `<div class="message-bubble">`;
+            if (!isMine) {
+                bubbleHtml += `<span class="message-username">${escapeHtml(msg.username)}</span>`;
             }
-            logDiv.innerHTML += html;
+            if (msg.type === 'text') {
+                bubbleHtml += `<div class="message-text">${escapeHtml(msg.content)}</div>`;
+                bubbleHtml += `<div class="message-time" style="text-align:right; margin-top:2px;">${timeStr}</div>`;
+            } else if (msg.type === 'file') {
+                bubbleHtml += `<div class="message-text">📎 Файл:</div>`;
+                let fileHtml = '';
+                if (msg.file_url && msg.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                    fileHtml = `<div class="file-message">
+                                    <a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a><br>
+                                    <img src="${escapeHtml(msg.file_url)}" class="file-image-preview" alt="preview">
+                                </div>`;
+                } else {
+                    fileHtml = `<div class="file-message">
+                                    <a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a>
+                                    <span style="font-size:0.7rem;">(${formatFileSize(msg.file_size)})</span>
+                                </div>`;
+                }
+                bubbleHtml += fileHtml;
+                bubbleHtml += `<div class="message-time" style="text-align:right; margin-top:4px;">${timeStr}</div>`;
+            }
+            bubbleHtml += `</div>`;
+            messageDiv.innerHTML = bubbleHtml;
+            logDiv.appendChild(messageDiv);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
 

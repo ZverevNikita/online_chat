@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 class ChatRoom(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -47,3 +48,11 @@ class Message(models.Model):
         ordering = ['timestamp']
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    bio = models.TextField(max_length=1000, blank=True, verbose_name="Описание")
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse('profile', kwargs={'username': self.user.username})

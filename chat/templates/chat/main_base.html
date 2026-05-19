@@ -133,7 +133,7 @@
             </div>
 
             <div class="user-section">
-                <span class="username">👤 {{ user.username }}</span>
+                <span class="username">👤 <a href = "{% url 'profile' request.user.username %}" >{{ user.username }}</a></span>
                 <a href="{% url 'logout' %}" class="logout-btn">Выйти</a>
             </div>
         </div>

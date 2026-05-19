@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ChatRoom, ChatFile, Message
+from .models import *
 
 @admin.register(ChatRoom)
 class ChatRoomAdmin(admin.ModelAdmin):
@@ -23,3 +23,7 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = ['username', 'room', 'message_type', 'timestamp']
     list_filter = ['room', 'message_type', 'timestamp']
     search_fields = ['username', 'content']
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'bio', 'photo']

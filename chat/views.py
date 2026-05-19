@@ -1,11 +1,11 @@
 import os
 from traceback import print_tb
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse,HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.core.files.storage import default_storage
 from django.utils.text import get_valid_filename
-from .models import ChatRoom, ChatFile, Message
+from .models import ChatRoom, ChatFile, Message, Profile
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
 from .forms import *
@@ -89,6 +89,7 @@ class RegistrationUser(CreateView):
 
     def form_valid(self, form):
         user = form.save()
+        Profile.objects.create(user=user)
         login(self.request, user)
         return redirect('index')
 
@@ -141,6 +142,10 @@ def upload_file(request, room_name):
         'size': uploaded_file.size,
     })
 
+
+def profile(request, username):
+    user_object = get_object_or_404(User, username=username)
+    return render(request, 'chat/profile.html', {'profile_user': user_object,'menu': menu_creator(request)})
 
 def pageNotFound(request,exception):
     return render(request, 'chat/404.html', status=404)

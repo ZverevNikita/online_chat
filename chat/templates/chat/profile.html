@@ -1,0 +1,180 @@
+{% extends 'chat/main_base.html' %}
+
+{% block title %}Профиль {{ profile_user.username }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: #f5f7fb;
+    }
+
+    /* Профиль — карточка с аватаром и информацией */
+    .profile-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        animation: fadeInUp 0.4s ease-out;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 40px 30px;
+        text-align: center;
+        color: white;
+    }
+
+    .avatar {
+        width: 120px;
+        height: 120px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        border: 4px solid white;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .profile-header h2 {
+        font-size: 2rem;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .profile-badge {
+        background: rgba(255,255,255,0.25);
+        backdrop-filter: blur(5px);
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 60px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 12px;
+    }
+
+    .profile-body {
+        padding: 30px;
+    }
+
+    .info-section {
+        margin-bottom: 28px;
+        border-bottom: 1px solid #eef2f6;
+        padding-bottom: 20px;
+    }
+
+    .info-section h3 {
+        color: #1e3c72;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .info-section p {
+        color: #2c3e50;
+        font-size: 1rem;
+        background: #f8f9ff;
+        padding: 12px 16px;
+        border-radius: 16px;
+        margin: 0;
+    }
+
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f0f2f5;
+        padding: 6px 14px;
+        border-radius: 40px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+
+    .staff-badge {
+        background: #fff3e0;
+        color: #e67e22;
+    }
+
+    .super-badge {
+        background: #ffe8e8;
+        color: #e74c3c;
+    }
+
+    /* Адаптив */
+    @media (max-width: 640px) {
+        .profile-header {
+            padding: 30px 20px;
+        }
+        .avatar {
+            width: 90px;
+            height: 90px;
+            font-size: 2.5rem;
+        }
+        .profile-header h2 {
+            font-size: 1.6rem;
+        }
+        .profile-body {
+            padding: 20px;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="avatar">
+                👤
+            </div>
+            <h2>{{ profile_user.username }}</h2>
+
+            {% if profile_user.is_staff or profile_user.is_superuser %}
+                {% if profile_user.is_superuser %}
+                    <div class="profile-badge super-badge">👑 Суперпользователь 👑</div>
+                {% else %}
+                    <div class="profile-badge staff-badge">🛡️ Сотрудник 🛡️</div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="profile-body">
+            <div class="info-section">
+                <h3>📅 Дата регистрации</h3>
+                <p>{{ profile_user.date_joined|date:"d.m.Y" }}</p>
+            </div>
+
+            <div class="info-section">
+                <h3>📝 Описание профиля</h3>
+                {% if profile_user.profile.bio %}
+                <p>{{profile_user.profile.bio}}</p>
+                {% else %}
+                <p><i>Как-то пустовато...</i></p>
+                {% endif %}
+            </div>
+            {% if request.user != profile_user %}
+                <div class="info-section">
+                    <h3>👥 Общие комнаты</h3>
+                    <p>Пока не реализовано</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
