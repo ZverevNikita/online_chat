@@ -135,40 +135,6 @@
         transform: scale(1.05);
     }
 
-    .create-form-card {
-        border: none;
-        border-radius: 16px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        margin-top: 30px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .create-form-card .card-header {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-        border-radius: 16px 16px 0 0;
-        padding: 15px 20px;
-        font-weight: 600;
-        font-size: 1.1rem;
-        border: none;
-    }
-
-    .btn-create {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        border: none;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .btn-create:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30,60,114,0.4);
-        color: white;
-    }
-
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -203,7 +169,6 @@
         animation: fadeInUp 0.3s ease-out;
     }
 
-    /* Улучшенная читаемость текста */
     body {
         background: #f5f7fb;
     }
@@ -212,21 +177,194 @@
         max-width: 1000px;
     }
 
-    /* Адаптивность */
     @media (max-width: 768px) {
         .hero-section h1 {
             font-size: 1.8rem;
         }
-
         .room-link {
             flex-direction: column;
             gap: 10px;
             align-items: flex-start;
         }
-
         .room-meta {
             width: 100%;
             justify-content: space-between;
+        }
+    }
+
+    .create-form-card {
+        border: none;
+        border-radius: 20px;
+        background: white;
+        margin-top: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .create-form-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .create-form-card .card-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 18px 24px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border: none;
+    }
+
+    .create-form-card .card-body {
+        padding: 24px;
+    }
+
+    .search-section {
+        margin-bottom: 25px;
+    }
+
+    .search-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 12px 18px;
+        font-size: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        font-family: inherit;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #2a5298;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    }
+
+    .btn-search {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30,60,114,0.3);
+    }
+
+    .btn-reset {
+        background: #6c757d;
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30,60,114,0.3);
+    }
+
+    .btn-search, .btn-reset {
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        line-height: normal;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+    }
+
+    .form-hint {
+        display: block;
+        margin-top: 12px;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+
+    .page-link {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: white;
+        color: #1e3c72;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        transition: 0.2s;
+    }
+
+    .page-link:hover {
+        background: #f0f2f5;
+        border-color: #2a5298;
+    }
+
+    .page-link.active {
+        background: #2a5298;
+        color: white;
+        border-color: #2a5298;
+    }
+
+    @media (max-width: 640px) {
+        .search-group {
+            flex-direction: column;
+        }
+        .search-input, .btn-search, .btn-reset, .btn-create {
+            width: 100%;
+            white-space: normal;
+        }
+        .create-form-card .card-body {
+            padding: 20px;
         }
     }
 </style>
@@ -239,16 +377,24 @@
         <p>Добро пожаловать в чат! Общайтесь в реальном времени, создавайте комнаты и находите новых друзей</p>
         <div class="stats-badge">
             <span>
-                {{ rooms.count }}
-                {% if rooms.count == 1 %}
-                    комната
-                {% elif rooms.count >= 2 and rooms.count <= 4 %}
-                    комнаты
-                {% else %}
-                    комнат
-                {% endif %}
+                {{ rooms.paginator.count }}
+                {% if rooms.paginator.count == 1 %}комната
+                {% elif rooms.paginator.count >= 2 and rooms.paginator.count <= 4 %}комнаты
+                {% else %}комнат{% endif %}
             </span>
         </div>
+    </div>
+
+    <div class="search-section">
+        <form method="get" action="{% url 'index' %}">
+            <div class="search-group">
+                <input type="text" name="q" value="{{ query }}" class="search-input" placeholder="Поиск комнаты по названию">
+                <button type="submit" class="btn-search">Найти</button>
+                {% if query %}
+                    <a href="{% url 'index' %}" class="btn-reset">Сбросить</a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 
     <div class="section-header">
@@ -260,46 +406,63 @@
         <div class="room-card">
             <a href="{% url 'room' room.name %}" class="room-link">
                 <div class="room-name">
-                    <div class="room-icon">
-                        💬
-                    </div>
+                    <div class="room-icon">💬</div>
                     <span>{{ room.name }}</span>
                 </div>
                 <div class="room-meta">
-                    <span class="room-date">{{ room.created_at|date:"d.m.Y" }} {{ room.created_at|date:"H:i" }}</span>
-                    <span class="enter-badge">войти →</span>
+                    <span class="room-date">{{ room.created_at|date:"d.m.Y H:i" }}</span>
+                    <span class="enter-badge">войти</span>
                 </div>
             </a>
         </div>
         {% endfor %}
+
+        {% if rooms.has_other_pages %}
+        <div class="pagination">
+            {% if rooms.number >= 4 %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}" class="page-link">Первая</a>
+            {% endif %}
+
+            {% for num in rooms.paginator.page_range %}
+                {% if rooms.number == num %}
+                    <span class="page-link active">{{ num }}</span>
+                {% elif num > rooms.number|add:'-3' and num < rooms.number|add:'3' %}
+                    <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if rooms.number <= rooms.paginator.num_pages|add:"-3" %}
+                <a href="?page={{ rooms.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}" class="page-link">Последняя</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
     {% else %}
         <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
-            <h4>Пока нет комнат</h4>
-            <p class="text-muted">Создайте первую комнату, чтобы начать общение!</p>
+            <div class="empty-state-icon">🔍</div>
+            <h4>Ничего не найдено</h4>
+            <p class="text-muted">Попробуйте другой поисковый запрос</p>
+            {% if query %}
+                <div style="margin-top: 20px;">
+                    <a href="{% url 'index' %}" class="btn-reset">Показать все комнаты</a>
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 
-    <div class="create-form-card card" id="create-room-form">
-        <div class="card-header">
-            Создать новую комнату
-        </div>
+    <div class="create-form-card" id="create-room-form">
+        <div class="card-header">Создать новую комнату</div>
         <div class="card-body">
             <form action="{% url 'create_room' %}" method="post">
                 {% csrf_token %}
-                <div class="input-group">
-                    <input type="text" name="room_name" class="form-control form-control-lg"
-                           placeholder="Введите название комнаты..."
-                           required
-                           pattern="[\w\s\-]{3,50}"
-                           title="Название от 3 до 50 символов">
-                    <button type="submit" class="btn btn-create btn-lg">
-                        Создать и войти
-                    </button>
+                <div class="search-group">
+                    <input type="text" name="room_name" class="search-input"
+                           placeholder="Введите название комнаты"
+                           required pattern="[\w\s\-]{3,50}"
+                           title="Название от 3 до 50 символов (буквы, цифры, пробелы)">
+                    <button type="submit" class="btn-create">Создать и войти</button>
                 </div>
-                <small class="text-muted mt-2 d-block">
-                    Название должно содержать от 3 до 50 символов (буквы, цифры, пробелы)
-                </small>
+                <small class="form-hint">Название должно содержать от 3 до 50 символов (буквы, цифры, пробелы)</small>
             </form>
         </div>
     </div>

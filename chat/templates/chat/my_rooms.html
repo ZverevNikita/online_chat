@@ -57,25 +57,6 @@
         font-weight: 600;
     }
 
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: #f0f2f5;
-        padding: 8px 20px;
-        border-radius: 25px;
-        text-decoration: none;
-        color: #2a5298;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-    .back-link:hover {
-        background: #2a5298;
-        color: white;
-        transform: translateX(-3px);
-    }
-
     .room-card {
         background: white;
         border-radius: 12px;
@@ -170,45 +151,6 @@
         gap: 10px;
     }
 
-    .btn-enter {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        color: white;
-        border: none;
-        padding: 8px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .btn-enter:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30,60,114,0.4);
-        color: white;
-    }
-
-    .btn-leave {
-        background: white;
-        color: #dc3545;
-        border: 2px solid #dc3545;
-        padding: 7px 18px;
-        border-radius: 8px;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .btn-leave:hover {
-        background: #dc3545;
-        color: white;
-        transform: translateY(-2px);
-    }
-
     .empty-state {
         text-align: center;
         padding: 60px 20px;
@@ -237,16 +179,94 @@
         flex-wrap: wrap;
     }
 
+    .search-section {
+        margin-bottom: 25px;
+    }
+
+    .search-group {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 12px 18px;
+        font-size: 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        font-family: inherit;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #2a5298;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+    }
+
+    .btn-search, .btn-reset, .btn-enter, .btn-leave, .btn-primary-custom, .btn-success-custom {
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .btn-search {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+    }
+
+    .btn-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30,60,114,0.3);
+    }
+
+    .btn-reset {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-reset:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .btn-enter {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+    }
+
+    .btn-enter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30,60,114,0.4);
+        color: white;
+    }
+
+    .btn-leave {
+        background: white;
+        color: #dc3545;
+        border: 2px solid #dc3545;
+    }
+
+    .btn-leave:hover {
+        background: #dc3545;
+        color: white;
+        transform: translateY(-2px);
+    }
+
     .btn-primary-custom {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         color: white;
-        padding: 10px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
     }
 
     .btn-primary-custom:hover {
@@ -258,19 +278,43 @@
     .btn-success-custom {
         background: #28a745;
         color: white;
-        padding: 10px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
     }
 
     .btn-success-custom:hover {
         transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(40,167,69,0.4);
         color: white;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+    }
+
+    .page-link {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: white;
+        color: #1e3c72;
+        text-decoration: none;
+        border: 1px solid #ddd;
+        transition: all 0.2s;
+    }
+
+    .page-link:hover {
+        background: #f0f2f5;
+        border-color: #2a5298;
+        transform: translateY(-2px);
+    }
+
+    .page-link.active {
+        background: #2a5298;
+        color: white;
+        border-color: #2a5298;
     }
 
     @keyframes fadeInUp {
@@ -300,22 +344,28 @@
         .hero-section h1 {
             font-size: 1.8rem;
         }
-
         .room-content {
             flex-direction: column;
             align-items: flex-start;
         }
-
         .room-actions {
             width: 100%;
             justify-content: flex-end;
         }
-
         .room-details {
             flex-direction: column;
             gap: 8px;
         }
-    }
+        .search-group {
+            flex-direction: column;
+        }
+        .btn-search, .btn-reset {
+        padding: 12px 24px;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 600;
+        }
+    
 </style>
 {% endblock %}
 
@@ -326,16 +376,30 @@
         <p>Комнаты, в которых вы участвуете</p>
         <div class="stats-badge">
             <span>
-                {{ rooms.count }}
-                {% if rooms.count == 1 %}
-                комната
-            {% elif rooms.count >= 2 and rooms.count <= 4 %}
-                комнаты
-            {% else %}
-                комнат
-            {% endif %}
+                {{ rooms.paginator.count }}
+                {% if rooms.paginator.count == 1 %}
+                    комната
+                {% elif rooms.paginator.count >= 2 and rooms.paginator.count <= 4 %}
+                    комнаты
+                {% else %}
+                    комнат
+                {% endif %}
             </span>
         </div>
+    </div>
+
+    <div class="search-section">
+        <form method="get" action="{% url 'my_rooms' %}">
+            <div class="search-group">
+                <input type="text" name="q" value="{{ query }}"
+                       class="search-input"
+                       placeholder="Поиск среди моих комнат по названию">
+                <button type="submit" class="btn-search">Найти</button>
+                {% if query %}
+                    <a href="{% url 'my_rooms' %}" class="btn-reset">Сбросить</a>
+                {% endif %}
+            </div>
+        </form>
     </div>
 
     {% if rooms %}
@@ -345,9 +409,7 @@
                 <div class="room-info">
                     <div class="room-name">
                         <a href="{% url 'room' room.name %}">
-                            <div class="room-icon">
-                                💬
-                            </div>
+                            <div class="room-icon">💬</div>
                             <span>{{ room.name }}</span>
                             <span class="active-badge">активна</span>
                         </a>
@@ -355,16 +417,12 @@
                     <div class="room-details">
                         <div class="detail-item">
                             Создана: {{ room.created_at|date:"d.m.Y" }}
-                        </div>
-                        <div class="detail-item">
                             {{ room.created_at|date:"H:i" }}
                         </div>
                     </div>
                 </div>
                 <div class="room-actions">
-                    <a href="{% url 'room' room.name %}" class="btn-enter">
-                        Войти
-                    </a>
+                    <a href="{% url 'room' room.name %}" class="btn-enter">Войти</a>
                     <form action="{% url 'leave_room' room_name=room.name %}" method="post" style="display: inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn-leave"
@@ -376,16 +434,43 @@
             </div>
         </div>
         {% endfor %}
-    {% else %}
 
+        {% if rooms.has_other_pages %}
+        <div class="pagination">
+            {% if rooms.number >= 4 %}
+                <a href="?page=1{% if query %}&q={{ query }}{% endif %}" class="page-link">Первая</a>
+            {% endif %}
+
+            {% for num in rooms.paginator.page_range %}
+                {% if rooms.number == num %}
+                    <span class="page-link active">{{ num }}</span>
+                {% elif num > rooms.number|add:'-3' and num < rooms.number|add:'3' %}
+                    <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}" class="page-link">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if rooms.number <= rooms.paginator.num_pages|add:"-3" %}
+                <a href="?page={{ rooms.paginator.num_pages }}{% if query %}&q={{ query }}{% endif %}" class="page-link">Последняя</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    {% else %}
         <div class="empty-state">
             <div class="empty-state-icon">🏠</div>
             <h4>У вас пока нет комнат</h4>
-            <p class="text-muted">Присоединитесь к существующей комнате или создайте новую</p>
+            <p class="text-muted">
+                {% if query %}
+                    Ничего не найдено по запросу «{{ query }}».
+                {% else %}
+                    Присоединитесь к существующей комнате или создайте новую
+                {% endif %}
+            </p>
             <div class="action-buttons">
-                <a href="{% url 'index' %}" class="btn-primary-custom">
-                    Все комнаты
-                </a>
+                <a href="{% url 'index' %}" class="btn-primary-custom">Все комнаты</a>
+                {% if query %}
+                    <a href="{% url 'my_rooms' %}" class="btn-success-custom">Показать все мои комнаты</a>
+                {% endif %}
             </div>
         </div>
     {% endif %}

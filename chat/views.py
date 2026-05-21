@@ -13,6 +13,9 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .models import ChatRoom
 
 def menu_creator(request):
     menu = [
@@ -25,22 +28,25 @@ def menu_creator(request):
 
 @login_required(login_url='/login/')
 def index(request):
-    rooms = ChatRoom.objects.all().order_by('-created_at')
-    context = {
-        'rooms': rooms,
-        'menu': menu_creator(request),
-    }
-    return render(request, 'chat/index.html', context=context)
+    query = request.GET.get('q', '')
+    rooms_list = Room.objects.all().order_by('-created_at')
+    if query:
+        rooms_list = rooms_list.filter(name__icontains=query)
+    paginator = Paginator(rooms_list, 10)
+    page = request.GET.get('page')
+    rooms = paginator.get_page(page)
+    return render(request, 'chat/index.html', {'rooms': rooms, 'query': query})
 
 @login_required(login_url='/login/')
 def my_rooms(request):
-    user_rooms = request.user.rooms.all().order_by('-created_at')
-    context = {
-        'rooms': user_rooms,
-        'menu': menu_creator(request),
-        'title': 'Мои комнаты'
-    }
-    return render(request, 'chat/my_rooms.html', context=context)
+    query = request.GET.get('q', '')
+    rooms_list = request.user.rooms.all().order_by('-created_at')
+    if query:
+        rooms_list = rooms_list.filter(name__icontains=query)
+    paginator = Paginator(rooms_list, 10)
+    page = request.GET.get('page')
+    rooms = paginator.get_page(page)
+    return render(request, 'chat/my_rooms.html', {'rooms': rooms, 'query': query})
 
 @login_required(login_url='/login/')
 def create_room(request):
@@ -149,3 +155,40 @@ def profile(request, username):
 
 def pageNotFound(request,exception):
     return render(request, 'chat/404.html', status=404)
+
+@login_required(login_url='/login/')
+def index(request):
+    query = request.GET.get('q', '')
+    rooms_list = ChatRoom.objects.all().order_by('-created_at')
+
+    if query:
+        rooms_list = rooms_list.filter(name__icontains=query)
+
+    paginator = Paginator(rooms_list, 10)
+    page_number = request.GET.get('page')
+    rooms = paginator.get_page(page_number)
+
+    context = {
+        'rooms': rooms,
+        'query': query,
+    }
+    return render(request, 'chat/index.html', context)
+
+
+@login_required
+def my_rooms(request):
+    query = request.GET.get('q', '')
+    rooms_list = request.user.rooms.all().order_by('-created_at')
+
+    if query:
+        rooms_list = rooms_list.filter(name__icontains=query)
+
+    paginator = Paginator(rooms_list, 10)
+    page_number = request.GET.get('page')
+    rooms = paginator.get_page(page_number)
+
+    context = {
+        'rooms': rooms,
+        'query': query,
+    }
+    return render(request, 'chat/my_rooms.html', context)
