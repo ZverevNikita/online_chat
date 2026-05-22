@@ -15,7 +15,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import ChatRoom
 
 def menu_creator(request):
     menu = [
@@ -175,7 +174,7 @@ def index(request):
     return render(request, 'chat/index.html', context)
 
 
-@login_required
+@login_required(login_url='/login/')
 def my_rooms(request):
     query = request.GET.get('q', '')
     rooms_list = request.user.rooms.all().order_by('-created_at')
@@ -194,12 +193,7 @@ def my_rooms(request):
     return render(request, 'chat/my_rooms.html', context)
 
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import ProfileForm
-
-
-@login_required
+@login_required(login_url='/login/')
 def edit_profile(request):
     profile = request.user.profile
     if request.method == 'POST':
