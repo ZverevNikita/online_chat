@@ -65,7 +65,6 @@
         background: #dc3545;
     }
 
-    /* Окно сообщений */
     .chat-log {
         height: 480px;
         overflow-y: auto;
@@ -76,7 +75,6 @@
         gap: 16px;
     }
 
-    /* Сообщения с аватарками */
     .message {
         display: flex;
         align-items: flex-start;
@@ -89,7 +87,6 @@
         flex-direction: row-reverse;
     }
 
-    /* Аватарка */
     .message-avatar {
         flex-shrink: 0;
         width: 40px;
@@ -116,9 +113,8 @@
         line-height: 1;
     }
 
-    /* Контент сообщения (имя + пузырек) */
     .message-content {
-        flex: 1;
+        flex: 0 1 auto;
         display: flex;
         flex-direction: column;
         gap: 4px;
@@ -155,7 +151,6 @@
         color: #8b9eb0;
     }
 
-    /* Пузырек */
     .message-bubble {
         background: white;
         border-radius: 20px;
@@ -175,6 +170,7 @@
     .message-text {
         font-size: 0.95rem;
         line-height: 1.4;
+        word-break: break-word;
     }
 
     .file-message {
@@ -258,7 +254,7 @@
             margin-left: 12px;
         }
         .chat-log {
-            height: 400px;
+            height: 450px;
             padding: 16px;
         }
         .message {
@@ -275,6 +271,127 @@
         }
         .btn-custom {
             padding: 10px 20px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .chat-container {
+            border-radius: 0;
+            width: 100%;
+            margin: 0;
+        }
+
+        .chat-header {
+            padding: 12px 16px;
+        }
+
+        .chat-header h2 {
+            font-size: 1.2rem;
+            gap: 8px;
+        }
+
+        .chat-header h2:before {
+            font-size: 1.2rem;
+        }
+
+        .ws-status {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+        }
+        .chat-log {
+            height: 65vh;
+            padding: 12px;
+            gap: 12px;
+        }
+        .message {
+            gap: 6px;
+            max-width: 98%;
+        }
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 1.1rem;
+        }
+        .avatar-placeholder {
+            font-size: 1rem;
+        }
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .message-username-link {
+            font-size: 0.85rem;
+        }
+        .message-time {
+            font-size: 0.6rem;
+        }
+        .message-bubble {
+            padding: 6px 12px;
+            border-radius: 18px;
+            word-break: break-word;
+        }
+        .message-text {
+            font-size: 0.9rem;
+        }
+
+        .file-message {
+            padding: 6px 10px;
+        }
+        .file-image-preview {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .input-area {
+            padding: 12px 16px;
+        }
+        .input-group-custom .form-control {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+        .btn-custom {
+            padding: 10px 16px;
+            font-size: 0.9rem;
+        }
+        .file-row {
+            margin-top: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .chat-log {
+            height: 60vh;
+            padding: 8px;
+        }
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            font-size: 1rem;
+        }
+        .message-bubble {
+            padding: 5px 10px;
+        }
+        .message-text {
+            font-size: 0.85rem;
+        }
+        .input-area {
+            padding: 10px 12px;
+        }
+        .btn-custom {
+            padding: 8px 12px;
+            font-size: 0.8rem;
+        }
+        .input-group-custom .form-control {
+            padding: 8px 12px;
+            font-size: 0.85rem;
         }
     }
 
@@ -371,7 +488,7 @@
                             username: data.username,
                             content: data.content,
                             timestamp: data.timestamp,
-                            avatar: data.avatar  // ожидаем URL аватарки от сервера
+                            avatar: data.avatar
                         });
                     } else if (data.type === 'file') {
                         appendMessage({
@@ -396,7 +513,6 @@
             chatSocket.onerror = (e) => { console.error('Ошибка WebSocket', e); chatSocket.close(); };
         }
 
-        // Функция отрисовки сообщения с аватаркой и кликабельным именем
         function appendMessage(msg) {
             const logDiv = document.getElementById('chat-log');
             if (!logDiv) return;
@@ -405,7 +521,6 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isMine ? 'message-mine' : ''}`;
 
-            // Аватарка (ссылка на профиль)
             const avatarLink = document.createElement('a');
             avatarLink.href = `/profile/view/${encodeURIComponent(msg.username)}/`;
             avatarLink.className = 'message-avatar';
@@ -417,7 +532,6 @@
                 img.alt = msg.username;
                 img.className = 'avatar-img';
                 img.onerror = function() {
-                    // при ошибке загрузки заменяем на плейсхолдер
                     this.style.display = 'none';
                     const placeholder = document.createElement('span');
                     placeholder.className = 'avatar-placeholder';
@@ -433,11 +547,9 @@
                 avatarLink.appendChild(placeholder);
             }
 
-            // Контентная часть (имя + пузырек)
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
 
-            // Шапка: имя (ссылка) + время
             const headerDiv = document.createElement('div');
             headerDiv.className = 'message-header';
 
@@ -454,7 +566,6 @@
             }
             headerDiv.appendChild(timeSpan);
 
-            // Пузырек с содержимым
             const bubbleDiv = document.createElement('div');
             bubbleDiv.className = 'message-bubble';
 
@@ -478,7 +589,6 @@
                 sizeSpan.textContent = `(${formatFileSize(msg.file_size)})`;
                 fileDiv.appendChild(sizeSpan);
 
-                // Предпросмотр для изображений
                 if (msg.file_url && msg.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
                     const preview = document.createElement('img');
                     preview.src = msg.file_url;

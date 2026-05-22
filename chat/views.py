@@ -5,6 +5,7 @@ from django.http import JsonResponse,HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.core.files.storage import default_storage
 from django.utils.text import get_valid_filename
+from .forms import ProfileForm
 from .models import ChatRoom, ChatFile, Message, Profile
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
@@ -59,7 +60,6 @@ def create_room(request):
                 room.participants.add(request.user)
                 return redirect('room', room_name=safe_name)
     return redirect('index')
-
 
 @login_required(login_url='/login/')
 def room(request, room_name):
@@ -174,7 +174,6 @@ def index(request):
     }
     return render(request, 'chat/index.html', context)
 
-
 @login_required
 def my_rooms(request):
     query = request.GET.get('q', '')
@@ -192,12 +191,6 @@ def my_rooms(request):
         'query': query,
     }
     return render(request, 'chat/my_rooms.html', context)
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import ProfileForm
-
 
 @login_required
 def edit_profile(request):
