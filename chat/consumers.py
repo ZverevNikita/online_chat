@@ -3,7 +3,8 @@ import re
 from urllib.parse import parse_qs
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
-from .models import ChatRoom, Message
+from .models import ChatRoom, Message, Profile
+
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -34,6 +35,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if not message_text:
                 return
             saved_msg = await self.save_text_message(self.username, self.room, message_text)
+            avatar_url = await self.get_avatar_url(self.username)
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -42,6 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'username': self.username,
                     'content': message_text,
                     'timestamp': saved_msg.timestamp.isoformat(),
+                    'avatar': avatar_url,
                 }
             )
         elif msg_type == 'file':
@@ -51,6 +54,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if not file_url:
                 return
             saved_msg = await self.save_file_message(self.username, self.room, file_url, file_name, file_size)
+            avatar_url = await self.get_avatar_url(self.username)
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
@@ -61,6 +65,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'file_name': file_name,
                     'file_size': file_size,
                     'timestamp': saved_msg.timestamp.isoformat(),
+                    'avatar': avatar_url,
                 }
             )
 
@@ -69,6 +74,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'type': event['message_type'],
             'username': event['username'],
             'timestamp': event.get('timestamp'),
+            'avatar': event.get('avatar'),
         }
         if event['message_type'] == 'text':
             payload['content'] = event['content']
@@ -80,10 +86,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_history(self):
         messages = await self.get_room_history(self.room)
+        # Добавляем аватарку к каждому сообщению истории
+        for msg in messages:
+            msg['avatar'] = await self.get_avatar_url(msg['username'])
         await self.send(text_data=json.dumps({
             'type': 'history',
             'messages': messages
         }))
+
+    # ========== БАЗА ДАННЫХ (синхронные методы) ==========
 
     @database_sync_to_async
     def get_or_create_room(self, room_name):
@@ -125,3 +136,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
             for msg in qs
         ]
+
+    @database_sync_to_async
+    def get_avatar_url(self, username):
+        try:
+            profile = Profile.objects.select_related('user').get(user__username=username)
+            if profile.photo:
+                return profile.photo.url
+        except Profile.DoesNotExist:
+            pass
+        return None

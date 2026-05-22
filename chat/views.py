@@ -148,7 +148,7 @@ def upload_file(request, room_name):
         'size': uploaded_file.size,
     })
 
-
+@login_required(login_url='/login/')
 def profile(request, username):
     user_object = get_object_or_404(User, username=username)
     return render(request, 'chat/profile.html', {'profile_user': user_object,'menu': menu_creator(request)})
@@ -192,3 +192,23 @@ def my_rooms(request):
         'query': query,
     }
     return render(request, 'chat/my_rooms.html', context)
+
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import ProfileForm
+
+
+@login_required
+def edit_profile(request):
+    profile = request.user.profile
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Профиль обновлён!')
+            return redirect('edit_profile')
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'chat/edit_profile.html', {'form': form})

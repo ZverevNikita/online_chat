@@ -52,7 +52,7 @@ class Message(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     bio = models.TextField(max_length=1000, blank=True, verbose_name="Описание")
-    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True,verbose_name='Фото профиля')
 
     def get_absolute_url(self):
         return reverse('profile', kwargs={'username': self.user.username})

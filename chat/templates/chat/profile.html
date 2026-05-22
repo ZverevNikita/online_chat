@@ -35,6 +35,13 @@
         margin-bottom: 20px;
         border: 4px solid white;
         box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        overflow: hidden;  /* чтобы изображение не выходило за круглые границы */
+    }
+
+    .avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;  /* изображение заполнит весь круг без искажений */
     }
 
     .profile-header h2 {
@@ -104,7 +111,43 @@
         color: #e74c3c;
     }
 
-    /* Адаптив */
+    .edit-profile-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 28px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        margin-top: 8px;
+        margin-bottom: 20px;
+    }
+
+    .edit-profile-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, #7b8cf5 0%, #8859b5 100%);
+        color: white;
+        text-decoration: none;
+    }
+
+    .edit-profile-btn:active {
+        transform: translateY(1px);
+    }
+
+    /* Контейнер для кнопки (выравнивание) */
+    .edit-button-wrapper {
+        text-align: center;
+        margin: 10px 0 20px;
+    }
+
     @media (max-width: 640px) {
         .profile-header {
             padding: 30px 20px;
@@ -140,7 +183,11 @@
     <div class="profile-card">
         <div class="profile-header">
             <div class="avatar">
-                👤
+                {% if profile_user.profile.photo %}
+                    <img src="{{ profile_user.profile.photo.url }}" alt="Аватар">
+                {% else %}
+                    👤
+                {% endif %}
             </div>
             <h2>{{ profile_user.username }}</h2>
 
@@ -152,15 +199,19 @@
                 {% endif %}
             {% endif %}
         </div>
-
+        {% if profile_user == request.user %}
+            <div class="edit-button-wrapper">
+                <a href="{% url 'edit_profile' %}" class="edit-profile-btn">Редактировать профиль</a>
+            </div>
+        {% endif %}
         <div class="profile-body">
             <div class="info-section">
-                <h3>📅 Дата регистрации</h3>
+                <h3>Дата регистрации</h3>
                 <p>{{ profile_user.date_joined|date:"d.m.Y" }}</p>
             </div>
 
             <div class="info-section">
-                <h3>📝 Описание профиля</h3>
+                <h3>Описание профиля</h3>
                 {% if profile_user.profile.bio %}
                 <p>{{profile_user.profile.bio}}</p>
                 {% else %}
@@ -169,7 +220,7 @@
             </div>
             {% if request.user != profile_user %}
                 <div class="info-section">
-                    <h3>👥 Общие комнаты</h3>
+                    <h3>Общие комнаты</h3>
                     <p>Пока не реализовано</p>
                 </div>
             {% endif %}

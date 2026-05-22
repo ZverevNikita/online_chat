@@ -1,0 +1,189 @@
+{% extends "chat/main_base.html" %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-edit-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .current-data {
+        background: #f8f9fa;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .current-data h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        font-size: 1.3rem;
+    }
+
+    .current-photo {
+        margin: 15px 0;
+    }
+
+    .current-photo img {
+        border-radius: 12px;
+        border: 2px solid #e0e0e0;
+        max-width: 150px;
+        height: auto;
+    }
+
+    hr {
+        margin: 25px 0;
+        border: none;
+        height: 1px;
+        background: linear-gradient(to right, #667eea, #764ba2, #667eea);
+    }
+
+    /* Стили для формы */
+    .edit-form .field {
+        margin-bottom: 20px;
+    }
+
+    .edit-form label {
+        font-weight: 600;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .edit-form input[type="text"],
+    .edit-form textarea,
+    .edit-form input[type="file"] {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: border 0.2s;
+    }
+
+    .edit-form input:focus,
+    .edit-form textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+
+    /* Стили для чекбокса "Очистить" */
+    .clear-checkbox {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fef2f2;
+        padding: 8px 12px;
+        border-radius: 12px;
+        width: fit-content;
+    }
+
+    .clear-checkbox input {
+        width: auto;
+        margin: 0;
+        transform: scale(1.1);
+        accent-color: #dc3545;
+    }
+
+    .clear-checkbox label {
+        display: inline;
+        font-weight: normal;
+        color: #dc3545;
+        margin: 0;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 6px;
+    }
+
+    .errorlist {
+        color: #dc3545;
+        list-style: none;
+        padding-left: 0;
+        font-size: 0.9rem;
+        margin: 5px 0;
+    }
+
+    .edit-form button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    .edit-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(102, 126, 234, 0.4);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-edit-card">
+    <h2>Редактировать профиль</h2>
+
+    <div class="current-data">
+        <h3>Текущие данные:</h3>
+        <p><strong>Описание:</strong> {{ user.profile.bio|default:"Не указано" }}</p>
+        <div class="current-photo">
+            <p><strong>Фото:</strong></p>
+            {% if user.profile.photo %}
+                <img src="{{ user.profile.photo.url }}" alt="Фото">
+            {% else %}
+                <p>Фото не загружено</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="edit-form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="field">
+                {{ form.bio.label_tag }}
+                {{ form.bio }}
+                {{ form.bio.errors }}
+                {% if form.bio.help_text %}
+                    <div class="help-text">{{ form.bio.help_text }}</div>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                {{ form.photo.label_tag }}
+                {{ form.photo }}
+                {{ form.photo.errors }}
+                {% if form.photo.help_text %}
+                    <div class="help-text">{{ form.photo.help_text }}</div>
+                {% endif %}
+
+                {% if form.photo.field.widget.is_initial and user.profile.photo %}
+                    <div class="clear-checkbox">
+                       {{ form.clear.label_tag }} {{ form.clear }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Сохранить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

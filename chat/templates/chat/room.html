@@ -73,28 +73,96 @@
         background: #fafcff;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 16px;
     }
 
-    /* Сообщения */
+    /* Сообщения с аватарками */
     .message {
         display: flex;
-        flex-direction: column;
         align-items: flex-start;
-        max-width: 80%;
+        gap: 12px;
+        max-width: 85%;
     }
 
     .message-mine {
-        align-items: flex-end;
         align-self: flex-end;
+        flex-direction: row-reverse;
     }
 
+    /* Аватарка */
+    .message-avatar {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: transform 0.2s;
+    }
+    .message-avatar:hover {
+        transform: scale(1.05);
+    }
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .avatar-placeholder {
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+
+    /* Контент сообщения (имя + пузырек) */
+    .message-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .message-mine .message-content {
+        align-items: flex-end;
+    }
+
+    .message-header {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .message-username-link {
+        font-weight: 700;
+        color: #667eea;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+    }
+    .message-username-link:hover {
+        color: #4c51bf;
+        text-decoration: underline;
+    }
+    .message-mine .message-username-link {
+        color: #5a67d8;
+    }
+
+    .message-time {
+        font-size: 0.65rem;
+        color: #8b9eb0;
+    }
+
+    /* Пузырек */
     .message-bubble {
         background: white;
         border-radius: 20px;
         padding: 8px 16px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         border: 1px solid #e9ecef;
+        word-wrap: break-word;
         max-width: 100%;
     }
 
@@ -104,25 +172,9 @@
         color: #1e1e2f;
     }
 
-    .message-username {
-        font-weight: 700;
-        color: #667eea;
-        font-size: 0.85rem;
-        margin-bottom: 4px;
-        display: block;
-    }
-
-    .message-time {
-        font-size: 0.65rem;
-        color: #8b9eb0;
-        margin-left: 8px;
-        font-weight: normal;
-    }
-
     .message-text {
         font-size: 0.95rem;
         line-height: 1.4;
-        word-wrap: break-word;
     }
 
     .file-message {
@@ -211,6 +263,12 @@
         }
         .message {
             max-width: 95%;
+            gap: 8px;
+        }
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            font-size: 1.2rem;
         }
         .input-group-custom {
             flex-direction: column;
@@ -312,7 +370,8 @@
                             type: 'text',
                             username: data.username,
                             content: data.content,
-                            timestamp: data.timestamp
+                            timestamp: data.timestamp,
+                            avatar: data.avatar  // ожидаем URL аватарки от сервера
                         });
                     } else if (data.type === 'file') {
                         appendMessage({
@@ -321,7 +380,8 @@
                             file_url: data.file_url,
                             file_name: data.file_name,
                             file_size: data.file_size,
-                            timestamp: data.timestamp
+                            timestamp: data.timestamp,
+                            avatar: data.avatar
                         });
                     }
                 } catch(err) { console.error('Ошибка обработки сообщения', err); }
@@ -336,41 +396,105 @@
             chatSocket.onerror = (e) => { console.error('Ошибка WebSocket', e); chatSocket.close(); };
         }
 
+        // Функция отрисовки сообщения с аватаркой и кликабельным именем
         function appendMessage(msg) {
             const logDiv = document.getElementById('chat-log');
             if (!logDiv) return;
+
             const isMine = (msg.username === username);
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isMine ? 'message-mine' : ''}`;
 
-            let timeStr = msg.timestamp ? `<span class="message-time">${new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>` : '';
+            // Аватарка (ссылка на профиль)
+            const avatarLink = document.createElement('a');
+            avatarLink.href = `/profile/view/${encodeURIComponent(msg.username)}/`;
+            avatarLink.className = 'message-avatar';
+            avatarLink.style.textDecoration = 'none';
 
-            let bubbleHtml = `<div class="message-bubble">`;
-            if (!isMine) {
-                bubbleHtml += `<span class="message-username">${escapeHtml(msg.username)}</span>`;
+            if (msg.avatar) {
+                const img = document.createElement('img');
+                img.src = msg.avatar;
+                img.alt = msg.username;
+                img.className = 'avatar-img';
+                img.onerror = function() {
+                    // при ошибке загрузки заменяем на плейсхолдер
+                    this.style.display = 'none';
+                    const placeholder = document.createElement('span');
+                    placeholder.className = 'avatar-placeholder';
+                    placeholder.textContent = '👤';
+                    avatarLink.innerHTML = '';
+                    avatarLink.appendChild(placeholder);
+                };
+                avatarLink.appendChild(img);
+            } else {
+                const placeholder = document.createElement('span');
+                placeholder.className = 'avatar-placeholder';
+                placeholder.textContent = '👤';
+                avatarLink.appendChild(placeholder);
             }
+
+            // Контентная часть (имя + пузырек)
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            // Шапка: имя (ссылка) + время
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'message-header';
+
+            const nameLink = document.createElement('a');
+            nameLink.href = `/profile/view/${encodeURIComponent(msg.username)}/`;
+            nameLink.className = 'message-username-link';
+            nameLink.textContent = escapeHtml(msg.username);
+            headerDiv.appendChild(nameLink);
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            if (msg.timestamp) {
+                timeSpan.textContent = new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            }
+            headerDiv.appendChild(timeSpan);
+
+            // Пузырек с содержимым
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+
             if (msg.type === 'text') {
-                bubbleHtml += `<div class="message-text">${escapeHtml(msg.content)}</div>`;
-                bubbleHtml += `<div class="message-time" style="text-align:right; margin-top:2px;">${timeStr}</div>`;
+                const textDiv = document.createElement('div');
+                textDiv.className = 'message-text';
+                textDiv.textContent = msg.content;
+                bubbleDiv.appendChild(textDiv);
             } else if (msg.type === 'file') {
-                bubbleHtml += `<div class="message-text">📎 Файл:</div>`;
-                let fileHtml = '';
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'file-message';
+                const fileLink = document.createElement('a');
+                fileLink.href = escapeHtml(msg.file_url);
+                fileLink.target = '_blank';
+                fileLink.textContent = escapeHtml(msg.file_name);
+                fileDiv.appendChild(fileLink);
+
+                const sizeSpan = document.createElement('span');
+                sizeSpan.style.fontSize = '0.7rem';
+                sizeSpan.style.marginLeft = '8px';
+                sizeSpan.textContent = `(${formatFileSize(msg.file_size)})`;
+                fileDiv.appendChild(sizeSpan);
+
+                // Предпросмотр для изображений
                 if (msg.file_url && msg.file_url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-                    fileHtml = `<div class="file-message">
-                                    <a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a><br>
-                                    <img src="${escapeHtml(msg.file_url)}" class="file-image-preview" alt="preview">
-                                </div>`;
-                } else {
-                    fileHtml = `<div class="file-message">
-                                    <a href="${escapeHtml(msg.file_url)}" target="_blank">${escapeHtml(msg.file_name)}</a>
-                                    <span style="font-size:0.7rem;">(${formatFileSize(msg.file_size)})</span>
-                                </div>`;
+                    const preview = document.createElement('img');
+                    preview.src = msg.file_url;
+                    preview.className = 'file-image-preview';
+                    preview.alt = 'preview';
+                    preview.style.display = 'block';
+                    preview.style.marginTop = '8px';
+                    fileDiv.appendChild(preview);
                 }
-                bubbleHtml += fileHtml;
-                bubbleHtml += `<div class="message-time" style="text-align:right; margin-top:4px;">${timeStr}</div>`;
+                bubbleDiv.appendChild(fileDiv);
             }
-            bubbleHtml += `</div>`;
-            messageDiv.innerHTML = bubbleHtml;
+
+            contentDiv.appendChild(headerDiv);
+            contentDiv.appendChild(bubbleDiv);
+            messageDiv.appendChild(avatarLink);
+            messageDiv.appendChild(contentDiv);
             logDiv.appendChild(messageDiv);
             logDiv.scrollTop = logDiv.scrollHeight;
         }
